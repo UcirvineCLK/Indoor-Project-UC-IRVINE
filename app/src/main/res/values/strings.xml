@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Indoor_System</string>
+    <string name="ble_not_supported">ble_not_supported</string>
+    <string name="unknown_device">unknown_device</string>
 </resources>
