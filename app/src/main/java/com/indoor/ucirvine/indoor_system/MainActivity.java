@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
+        setBLE();
+
         // Ensures Bluetooth is available on the device and it is enabled. If not,
         // displays a dialog requesting user permission to enable Bluetooth.
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
