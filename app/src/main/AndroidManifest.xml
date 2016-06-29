@@ -16,7 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service android:name=".ServiceClass"></service>
@@ -24,10 +27,6 @@
         <activity android:name=".libary.DeviceScanActivity"
             android:icon="@drawable/ic_action_name"
             android:theme="@android:style/Theme.Holo.Light">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".libary.DeviceControlActivity"/>
         <service android:name=".libary.BluetoothLeService" android:enabled="true"/>
