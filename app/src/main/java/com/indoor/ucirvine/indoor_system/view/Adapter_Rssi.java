@@ -21,6 +21,10 @@ public class Adapter_Rssi  extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<rssiData> listView = new ArrayList<rssiData>() ;
 
+    static ArrayList<rssiData> device_1 = new ArrayList<rssiData>();
+    static ArrayList<rssiData> device_2 = new ArrayList<rssiData>();
+    static ArrayList<rssiData> device_3 = new ArrayList<rssiData>();
+
     // ListViewAdapter의 생성자
     public Adapter_Rssi() {
 
@@ -51,10 +55,10 @@ public class Adapter_Rssi  extends BaseAdapter {
 
         rssiData item_list_view = listView.get(position);
 
-        device_name.setText(""+item_list_view.getDeviceName());
-        device_address.setText(""+item_list_view.getDeviceAddress());
-        timeStamp.setText(""+item_list_view.getTimeStamp());
-        rssi.setText(""+item_list_view.getRssi());
+        device_name.setText(" "+item_list_view.getDeviceName());
+        device_address.setText(" "+item_list_view.getDeviceAddress());
+        timeStamp.setText(" "+item_list_view.getTimeStamp());
+        rssi.setText(" "+item_list_view.getRssi());
 
         return convertView;
     }
@@ -75,16 +79,27 @@ public class Adapter_Rssi  extends BaseAdapter {
         listView.clear();
     }
 
-    // 1.이미지, 2.물품이름, 3.가격, 4.좋아요수, 5.리뷰수 6.
-    public void addItem(String name, String address, String time, String rssi)  {
+    public void addItem(String name, String address, String time, String rssi) {
         rssiData item = new rssiData();
 
-        item.setDeviceName(name);
-        item.setDeviceAddress(address);
-        item.setTimeStamp(time);
-        item.setRssi(rssi);
+//        if (address.equals("B8:27:EB:A6:A1:E9") || address.equals("B8:27:EB:26:28:F4") || address.equals("B8:27:EB:25:31:D6")) {
 
-        listView.add(item);
+            item.setDeviceName(name);
+            item.setDeviceAddress(address);
+            item.setTimeStamp(time);
+            item.setRssi(rssi);
+
+            if (address.equals("B8:27:EB:A6:A1:E9"))
+                device_1.add(item);
+
+            if (address.equals("B8:27:EB:26:28:F4"))
+                device_2.add(item);
+
+            if (address.equals("B8:27:EB:25:31:D6"))
+                device_3.add(item);
+
+            listView.add(item);
+//        }
     }
 
     public static class ViewHolderHelper{
