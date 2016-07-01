@@ -1,12 +1,16 @@
 package com.indoor.ucirvine.indoor_system;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,6 +28,7 @@ import java.util.List;
 
 import static com.indoor.ucirvine.indoor_system.MainActivity.ByteArrayToString;
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -38,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
     TextView device2_distance;
     TextView device3_distance;
 
+
+    double avg_d2;
+    int c_d2;
+
+    double avg_d3;
+    int c_d3;
 
     private final static int REQUEST_ENABLE_BT = 1;
 
@@ -80,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mBluetoothAdapter.startLeScan(mLeScanCallback);
+//        mBluetoothAdapter.
+
+        avg_d2 = 0;
+        c_d2 = 0;
+
+        avg_d3 = 0;
+        c_d3 = 0;
     }
 
     @Override
@@ -107,6 +125,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Device scan callback.
+    private ScanCallback mScanCallback =
+            new ScanCallback() {
+
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    super.onScanResult(callbackType, result);
+
+                    Log.e("what the" , "first" + result.toString());
+                }
+
+                @Override
+                public void onBatchScanResults(List<ScanResult> results) {
+                    super.onBatchScanResults(results);
+
+                }
+
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                }
+            };
+
+    // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
 
@@ -116,48 +157,65 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            Long tsLong = System.currentTimeMillis()/1000;
-                            String ts = tsLong.toString();
-                            byte txpw = scanRecord[29];
-                            scanRecord.toString();
-                            double d = 0;
+                            if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6")) {
 
-                            if(-60 < rssi && rssi < -40){
-                                d = ( (3*Math.pow(10,8))  / (4*3.14*2.4*Math.pow(10,9)) ) * Math.pow(10,0);
-                            }
-                            else if(-40 < rssi){
-                                d = ( (3*Math.pow(10,8))  / (4*3.14*2.4*Math.pow(10,9)) ) * Math.pow(10,(rssi+40)/20);
-                            }
-                            else if(-60 > rssi){
-                                d = ( (3*Math.pow(10,8))  / (4*3.14*2.4*Math.pow(10,9)) ) * Math.pow(10,-0.5);
-                            }
 
-                            if (device.getAddress().equals("B8:27:EB:A6:A1:E9")){
-                                device1.setText(""+rssi);
-                                device1_distance.setText("  "+(int)txpw + " " + scanRecord + " " + d);
+                                Long tsLong = System.currentTimeMillis() / 1000;
+                                String ts = tsLong.toString();
+                                byte txpw = scanRecord[29];
+                                scanRecord.toString();
+                                double d = 0;
 
-                            }
-//
-//                            if (device.getAddress().equals("B8:27:EB:26:28:F4")){
-//                                device2.setText(""+rssi);
-//                                device2_distance.setText("  "+(int)txpw);
-//                            }
-                            //test
-                            if (device.getAddress().equals("B8:27:EB:3A:91:F4")){
-                                device2.setText(""+rssi);
-                                device2_distance.setText("  "+(int)txpw + " " + scanRecord[29]  + " " + d);
-                            }
+                                d = calculateAccuracy(29,rssi);
 
-                            if (device.getAddress().equals("B8:27:EB:25:31:D6")){
-                                device3.setText(""+rssi);
-                                device3_distance.setText("  "+(int)txpw  + " " + d);
-                            }
+                                if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
+                                    device1.setText("" + rssi);
+                                    device1_distance.setText("  " + d);
 
-                            Log.e("rssi","rssi = " +" name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw " + txpw + " " + scanRecord);
-                            Log.e("scanRecord","scanRecord = " + scanRecord.toString());
-                            printScanRecord(scanRecord);
-                            adapter.addItem(device.getName(),device.getAddress(), ""+rssi ,ts );
-                            adapter.notifyDataSetChanged();
+                                }
+
+                                if (device.getAddress().equals("B8:27:EB:26:28:F4")){
+                                    avg_d2 += rssi;
+                                    c_d2 ++;
+
+                                    if(c_d3 > 10){
+                                        device2.setText("" + avg_d2/c_d2);
+                                        d = calculateAccuracy(29, avg_d2/c_d2);
+                                        device2_distance.setText("  "+ d);
+                                        avg_d2 = 0;
+                                        c_d2 = 0;
+                                    }
+                                }
+//                                //test
+//                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
+//                                    device2.setText("" + rssi);
+//                                    device2_distance.setText("  "+ d);
+//                                }
+
+                                if (device.getAddress().equals("B8:27:EB:25:31:D6")) {
+                                    avg_d3 += rssi;
+                                    c_d3 ++;
+
+                                    if(c_d3 > 30){
+                                        device3.setText("" + avg_d3/c_d3);
+                                        d = calculateAccuracy(29, avg_d3/c_d3);
+                                        device3_distance.setText("  "+ d);
+                                        c_d3 = 0;
+                                    }
+                                }
+
+                                Log.e("rssi", "rssi = " + " name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw " + txpw + " " + scanRecord);
+                                Log.e("scanRecord", "scanRecord = " + scanRecord.toString());
+
+                                printScanRecord(scanRecord);
+                                adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d);
+                                adapter.notifyDataSetChanged();
+
+//                                for(int i = 0 ; i < 56 ; i++){
+//                                    for(int j = 10 ; j < 50 ; j++)
+//                                    Log.e("distance", "i hope = "+ i +" " + j + " " + calculateAccuracy(i,j));
+//                                }
+                            }
                         }
                     });
                 }
@@ -243,6 +301,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return records;
+        }
+    }
+
+    protected static double calculateAccuracy(int txPower, double rssi) {
+        if (rssi == 0) {
+            return -1.0; // if we cannot determine accuracy, return -1.
+        }
+
+        double ratio = rssi*1.0/txPower;
+        if (ratio < 1.0) {
+            return Math.pow(ratio,10);
+        }
+        else {
+            double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
+            return accuracy;
         }
     }
 }
