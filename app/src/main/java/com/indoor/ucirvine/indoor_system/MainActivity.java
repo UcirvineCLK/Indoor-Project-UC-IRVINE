@@ -157,34 +157,47 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
+                            int x1 = 0, y1 = 0;     // device1 addr
+                            int x2 = 0, y2 = -3;    // device2 addr
+                            int x3 = -1, y3 = -3;   // device3 addr
+                            double x=0, y =0; // terminal addr
+
                             if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6")) {
 
 
                                 Long tsLong = System.currentTimeMillis() / 1000;
                                 String ts = tsLong.toString();
-                                byte txpw = scanRecord[29];
+                                //byte txpw = scanRecord[29];
                                 scanRecord.toString();
-                                double d = 0;
+                                double d1 = 0, d2 = 0 , d3 = 0;
 
-                                d = calculateAccuracy(29,rssi);
 
                                 if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
                                     device1.setText("" + rssi);
-                                    device1_distance.setText("  " + d);
+                                    d1 = calculateAccuracy(-56,rssi);
 
+                                    device1_distance.setText("  " + d1);
+                                    printScanRecord(scanRecord);
+                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d1);
+                                    adapter.notifyDataSetChanged();
                                 }
 
                                 if (device.getAddress().equals("B8:27:EB:26:28:F4")){
                                     avg_d2 += rssi;
                                     c_d2 ++;
+                                    //d2 = calculateAccuracy(-56,rssi);
 
-                                    if(c_d3 > 10){
+
+                                    if(c_d2 > 10){
                                         device2.setText("" + avg_d2/c_d2);
-                                        d = calculateAccuracy(29, avg_d2/c_d2);
-                                        device2_distance.setText("  "+ d);
+                                        d2 = calculateAccuracy(-56, avg_d2/c_d2);
+                                        device2_distance.setText("  "+ d2);
                                         avg_d2 = 0;
                                         c_d2 = 0;
                                     }
+                                    printScanRecord(scanRecord);
+                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d2);
+                                    adapter.notifyDataSetChanged();
                                 }
 //                                //test
 //                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
@@ -195,21 +208,32 @@ public class MainActivity extends AppCompatActivity {
                                 if (device.getAddress().equals("B8:27:EB:25:31:D6")) {
                                     avg_d3 += rssi;
                                     c_d3 ++;
+                                    //d3 = calculateAccuracy(-56,rssi);
 
                                     if(c_d3 > 30){
                                         device3.setText("" + avg_d3/c_d3);
-                                        d = calculateAccuracy(29, avg_d3/c_d3);
-                                        device3_distance.setText("  "+ d);
+                                        d3 = calculateAccuracy(-56, avg_d3/c_d3);
+                                        device3_distance.setText("  "+ d3);
                                         c_d3 = 0;
+                                        avg_d3=0;
                                     }
+                                    printScanRecord(scanRecord);
+                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d3);
+                                    adapter.notifyDataSetChanged();
                                 }
+                                double m = (d1-d3-9)/6;
+                                double x_t =Math.pow(m,2);
+                                if(x_t <0)
+                                    x_t=-1*x_t;
+                                x=Math.sqrt(x_t);
+                                y= (d1-d3-9)/6;
+                                Log.e("x","x = "+x);
+                                Log.e("y","y = "+y);
 
-                                Log.e("rssi", "rssi = " + " name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw " + txpw + " " + scanRecord);
+                                Log.e("rssi", "rssi = " + " name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw =-56" + " " + scanRecord);
                                 Log.e("scanRecord", "scanRecord = " + scanRecord.toString());
 
-                                printScanRecord(scanRecord);
-                                adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d);
-                                adapter.notifyDataSetChanged();
+
 
 //                                for(int i = 0 ; i < 56 ; i++){
 //                                    for(int j = 10 ; j < 50 ; j++)
