@@ -24,13 +24,6 @@
 
         <service android:name=".ServiceClass"></service>
 
-        <activity android:name=".libary.DeviceScanActivity"
-            android:icon="@drawable/ic_action_name"
-            android:theme="@android:style/Theme.Holo.Light">
-        </activity>
-        <activity android:name=".libary.DeviceControlActivity"/>
-        <service android:name=".libary.BluetoothLeService" android:enabled="true"/>
-
     </application>
 
 </manifest>

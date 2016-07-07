@@ -2,12 +2,14 @@ package com.indoor.ucirvine.indoor_system;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,18 +17,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.indoor.ucirvine.indoor_system.view.Adapter_Rssi;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.indoor.ucirvine.indoor_system.MainActivity.ByteArrayToString;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     TextView device1_distance;
     TextView device2_distance;
     TextView device3_distance;
+
+    Button save_button;
 
 
     double avg_d2;
@@ -64,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         device1_distance  = (TextView)findViewById(R.id.device1_distance);
         device2_distance  = (TextView)findViewById(R.id.device2_distance);
         device3_distance  = (TextView)findViewById(R.id.device3_distance);
+
+        save_button = (Button)findViewById(R.id.save_button);
 
         adapter = new Adapter_Rssi();
         listview = (ListView) findViewById(R.id.item_list);
@@ -98,6 +113,74 @@ public class MainActivity extends AppCompatActivity {
 
         avg_d3 = 0;
         c_d3 = 0;
+
+        save_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.popup));
+                AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
+
+                final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
+
+                aDialog.setTitle("상품"); //타이틀바 제목
+                aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
+                aDialog.setPositiveButton("확인",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String dirPath = getFilesDir().getAbsolutePath();
+                                File file = new File(dirPath);
+
+                                // 일치하는 폴더가 없으면 생성
+                                if( !file.exists() ) {
+                                    file.mkdirs();
+                                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                                }
+
+                                // txt 파일 생성
+                                String testStr = "ABCDEFGHIJK...";
+                                File savefile = new File(dirPath+"/"+ txt_name.getText().toString()+ ".txt");
+                                try{
+                                    FileOutputStream fos = new FileOutputStream(savefile);
+                                    fos.write(testStr.getBytes());
+                                    fos.close();
+                                    Toast.makeText(MainActivity.this, "Save Success"+dirPath, Toast.LENGTH_SHORT).show();
+                                } catch(IOException e){}
+
+                                // 파일이 1개 이상이면 파일 이름 출력
+                                if ( file.listFiles().length > 0 )
+                                    for ( File f : file.listFiles() ) {
+                                        String str = f.getName();
+                                        Log.v(null,"fileName : "+str);
+
+                                        // 파일 내용 읽어오기
+                                        String loadPath = dirPath+"/"+str;
+                                        try {
+                                            FileInputStream fis = new FileInputStream(loadPath);
+                                            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(fis));
+
+                                            String content="", temp="";
+                                            while( (temp = bufferReader.readLine()) != null ) {
+                                                content += temp;
+                                            }
+                                            Log.v(null,""+content);
+                                        } catch (Exception e) {}
+                                    }
+                            }
+                        }).setNegativeButton("취소",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 'No'
+                                return;
+                            }
+                        });
+                AlertDialog ad = aDialog.create();
+
+                ad.show();
+
+            }
+        });
     }
 
     @Override
