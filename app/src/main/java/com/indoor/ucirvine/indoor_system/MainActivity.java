@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String dirPath = getFilesDir().getAbsolutePath();
+                                String dirPath = "/storage/emulated/0";
                                 File file = new File(dirPath);
 
                                 // 일치하는 폴더가 없으면 생성
