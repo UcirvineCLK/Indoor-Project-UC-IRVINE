@@ -137,8 +137,24 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
                                 }
 
+                                String testStr = "";
                                 // txt 파일 생성
-                                String testStr = "ABCDEFGHIJK...";
+                                for(int i = 0 ; i < Adapter_Rssi.device_1.size(); i ++){
+                                    testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ " "  + Adapter_Rssi.device_1.get(i).getTimeStamp()+ "" ;
+                                }
+
+                                testStr +="[____________";
+
+                                for(int i = 0 ; i < Adapter_Rssi.device_2.size(); i ++){
+                                    testStr += Adapter_Rssi.device_2.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_2.get(i).getRssi() + " " + Adapter_Rssi.device_2.get(i).getDistance() + " " + Adapter_Rssi.device_2.get(i).getTimeStamp()+ "]" ;
+                                }
+
+                                testStr +="[____________";
+
+                                for(int i = 0 ; i < Adapter_Rssi.device_3.size(); i ++){
+                                    testStr += Adapter_Rssi.device_3.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_3.get(i).getRssi() + " " + Adapter_Rssi.device_3.get(i).getDistance()+ " "  + Adapter_Rssi.device_3.get(i).getTimeStamp()+ "]" ;
+                                }
+
                                 File savefile = new File(dirPath+"/"+ txt_name.getText().toString()+ ".txt");
                                 try{
                                     FileOutputStream fos = new FileOutputStream(savefile);
@@ -261,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     device1_distance.setText("  " + d1);
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d1);
+                                    adapter.addItem(device.getName(), device.getAddress(), ""+ts ,"" + rssi, ""+ d1);
                                     adapter.notifyDataSetChanged();
                                 }
 
@@ -279,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                                         c_d2 = 0;
                                     }
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d2);
+                                    adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d2);
                                     adapter.notifyDataSetChanged();
                                 }
 //                                //test
@@ -301,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
                                         avg_d3=0;
                                     }
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), "" + rssi, ""+ d3);
+                                    adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d3);
                                     adapter.notifyDataSetChanged();
                                 }
                                 double m = (d1-d3-9)/6;

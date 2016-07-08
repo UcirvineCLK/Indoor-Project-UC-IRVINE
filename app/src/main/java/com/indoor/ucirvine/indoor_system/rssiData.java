@@ -9,6 +9,15 @@ public class rssiData {
     private String deviceAddress;
     private String timeStamp;
     private String rssi;
+    private String distance;
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;

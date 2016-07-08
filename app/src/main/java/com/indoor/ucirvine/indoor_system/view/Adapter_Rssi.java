@@ -21,9 +21,9 @@ public class Adapter_Rssi  extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<rssiData> listView = new ArrayList<rssiData>() ;
 
-    static ArrayList<rssiData> device_1 = new ArrayList<rssiData>();
-    static ArrayList<rssiData> device_2 = new ArrayList<rssiData>();
-    static ArrayList<rssiData> device_3 = new ArrayList<rssiData>();
+    public static ArrayList<rssiData> device_1 = new ArrayList<rssiData>();
+    public static ArrayList<rssiData> device_2 = new ArrayList<rssiData>();
+    public static ArrayList<rssiData> device_3 = new ArrayList<rssiData>();
 
     // ListViewAdapter의 생성자
     public Adapter_Rssi() {
@@ -79,7 +79,7 @@ public class Adapter_Rssi  extends BaseAdapter {
         listView.clear();
     }
 
-    public void addItem(String name, String address, String time, String rssi) {
+    public void addItem(String name, String address, String time, String rssi, String distance) {
         rssiData item = new rssiData();
 
 //        if (address.equals("B8:27:EB:A6:A1:E9") || address.equals("B8:27:EB:26:28:F4") || address.equals("B8:27:EB:25:31:D6")) {
@@ -88,6 +88,7 @@ public class Adapter_Rssi  extends BaseAdapter {
             item.setDeviceAddress(address);
             item.setTimeStamp(time);
             item.setRssi(rssi);
+            item.setDistance(distance);
 
             if (address.equals("B8:27:EB:A6:A1:E9"))
                 device_1.add(item);
