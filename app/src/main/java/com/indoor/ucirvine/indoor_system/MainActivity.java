@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
                 final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
 
-                aDialog.setTitle("상품"); //타이틀바 제목
+                aDialog.setTitle("Rssi receive"); //타이틀바 제목
                 aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
                 aDialog.setPositiveButton("확인",
                         new DialogInterface.OnClickListener() {
@@ -130,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 String dirPath = "/storage/emulated/0";
                                 File file = new File(dirPath);
+                                int rssi_device1 = Adapter_Rssi.device_1.size();        //버튼 클릭시 사이즈 픽스
+                                int rssi_device2 = Adapter_Rssi.device_2.size();
+                                int rssi_device3 = Adapter_Rssi.device_3.size();
 
                                 // 일치하는 폴더가 없으면 생성
                                 if( !file.exists() ) {
@@ -139,19 +143,19 @@ public class MainActivity extends AppCompatActivity {
 
                                 String testStr = "";
                                 // txt 파일 생성
-                                for(int i = 0 ; i < Adapter_Rssi.device_1.size(); i ++){
+                                for(int i = 0 ; i < rssi_device1; i ++){
                                     testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ " "  + Adapter_Rssi.device_1.get(i).getTimeStamp()+ "" ;
                                 }
 
                                 testStr +="[____________";
 
-                                for(int i = 0 ; i < Adapter_Rssi.device_2.size(); i ++){
+                                for(int i = 0 ; i < rssi_device2; i ++){
                                     testStr += Adapter_Rssi.device_2.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_2.get(i).getRssi() + " " + Adapter_Rssi.device_2.get(i).getDistance() + " " + Adapter_Rssi.device_2.get(i).getTimeStamp()+ "]" ;
                                 }
 
                                 testStr +="[____________";
 
-                                for(int i = 0 ; i < Adapter_Rssi.device_3.size(); i ++){
+                                for(int i = 0 ; i < rssi_device3; i ++){
                                     testStr += Adapter_Rssi.device_3.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_3.get(i).getRssi() + " " + Adapter_Rssi.device_3.get(i).getDistance()+ " "  + Adapter_Rssi.device_3.get(i).getTimeStamp()+ "]" ;
                                 }
 
