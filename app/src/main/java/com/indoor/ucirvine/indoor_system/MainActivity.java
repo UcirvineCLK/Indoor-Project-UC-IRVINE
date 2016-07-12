@@ -129,11 +129,15 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String dirPath = "/storage/emulated/0";
+//                               String dirPath = "/storage/emulated/0";
+                                String dirPath = "/sdcard";
+
                                 File file = new File(dirPath);
+
                                 int rssi_device1 = Adapter_Rssi.device_1.size();        //버튼 클릭시 사이즈 픽스
                                 int rssi_device2 = Adapter_Rssi.device_2.size();
                                 int rssi_device3 = Adapter_Rssi.device_3.size();
+
 
                                 // 일치하는 폴더가 없으면 생성
                                 if( !file.exists() ) {
@@ -164,7 +168,18 @@ public class MainActivity extends AppCompatActivity {
                                     FileOutputStream fos = new FileOutputStream(savefile);
                                     fos.write(testStr.getBytes());
                                     fos.close();
-                                    Toast.makeText(MainActivity.this, "Save Success"+dirPath, Toast.LENGTH_SHORT).show();
+                                    int dataNum = 0;
+                                    if(rssi_device1 != 0)
+                                        dataNum = rssi_device1;
+                                    else if(rssi_device2 != 0)
+                                        dataNum = rssi_device2;
+                                    else if(rssi_device3 != 0)
+                                        dataNum = rssi_device3;
+                                    else
+                                        dataNum=-1;
+
+                                    Toast.makeText(MainActivity.this, "Save Success"+dirPath+"/Data Num="+dataNum, Toast.LENGTH_SHORT).show();
+
                                 } catch(IOException e){}
 
                                 // 파일이 1개 이상이면 파일 이름 출력
