@@ -268,17 +268,14 @@ public class MainActivity extends AppCompatActivity {
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
-
+                double d1 = 0, d2 = 0 , d3 = 0;
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
+
+
                         @Override
                         public void run() {
-
-                            int x1 = 0, y1 = 0;     // device1 addr
-                            int x2 = 0, y2 = -3;    // device2 addr
-                            int x3 = -1, y3 = -3;   // device3 addr
-                            double x=0, y =0; // terminal addr
 
                             if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6")) {
 
@@ -287,7 +284,6 @@ public class MainActivity extends AppCompatActivity {
                                 String ts = tsLong.toString();
                                 //byte txpw = scanRecord[29];
                                 scanRecord.toString();
-                                double d1 = 0, d2 = 0 , d3 = 0;
 
 
                                 if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
@@ -339,12 +335,23 @@ public class MainActivity extends AppCompatActivity {
                                     adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d3);
                                     adapter.notifyDataSetChanged();
                                 }
-                                double m = (d1-d3-9)/6;
-                                double x_t =Math.pow(m,2);
+
+
+                                double x1 = 0, y1 = 0;     // device2 addr = d2
+                                double x2 = 0, y2 = 2;    // device3 addr = d3
+                                double x3 = -1, y3 = -3;   // device1 addr = d1
+                                double x=0, y =0; // terminal addr init
+
+                                y = (Math.pow(d2,2)+4-Math.pow(d3,2))/4;
+
+                                double x_t =Math.pow(d2,2)-y;
                                 if(x_t <0)
                                     x_t=-1*x_t;
+
                                 x=Math.sqrt(x_t);
-                                y= (d1-d3-9)/6;
+                                Log.e("d1","d1 = "+d1);
+                                Log.e("d2","d2 = "+d2);
+                                Log.e("d3","d3 = "+d3);
                                 Log.e("x","x = "+x);
                                 Log.e("y","y = "+y);
 
@@ -405,6 +412,8 @@ public class MainActivity extends AppCompatActivity {
 
         return hex.toString();
     }
+
+
 
     public static class AdRecord {
 
