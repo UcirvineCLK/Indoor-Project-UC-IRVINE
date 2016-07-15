@@ -117,103 +117,112 @@ public class MainActivity extends AppCompatActivity {
 
         save_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
-                View layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.popup));
-                AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
+//                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
+//                View layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.popup));
+//                AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
+//
+//                final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
+//
+//                aDialog.setTitle("Rssi receive"); //타이틀바 제목
+//                aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
+//                aDialog.setPositiveButton("확인",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+////                               String dirPath = "/storage/emulated/0";
+//
+//                            }
+//                        }).setNegativeButton("취소",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                // 'No'
+//                                return;
+//                            }
+//                        });
+//                AlertDialog ad = aDialog.create();
+//
+//                ad.show();
+                String dirPath = "/sdcard";
 
-                final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
+                File file = new File(dirPath);
 
-                aDialog.setTitle("Rssi receive"); //타이틀바 제목
-                aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
-                aDialog.setPositiveButton("확인",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-//                               String dirPath = "/storage/emulated/0";
-                                String dirPath = "/sdcard";
-
-                                File file = new File(dirPath);
-
-                                int rssi_device1 = Adapter_Rssi.device_1.size();        //버튼 클릭시 사이즈 픽스
-                                int rssi_device2 = Adapter_Rssi.device_2.size();
-                                int rssi_device3 = Adapter_Rssi.device_3.size();
+                int rssi_device1 = Adapter_Rssi.device_1.size();        //버튼 클릭시 사이즈 픽스
+                int rssi_device2 = Adapter_Rssi.device_2.size();
+                int rssi_device3 = Adapter_Rssi.device_3.size();
 
 
-                                // 일치하는 폴더가 없으면 생성
-                                if( !file.exists() ) {
-                                    file.mkdirs();
-                                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
-                                }
+                // 일치하는 폴더가 없으면 생성
+                if( !file.exists() ) {
+                    file.mkdirs();
+                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                }
 
-                                String testStr = "";
-                                // txt 파일 생성
-                                for(int i = 0 ; i < rssi_device1; i ++){
-                                    testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ " "  + Adapter_Rssi.device_1.get(i).getTimeStamp()+ "" ;
-                                }
+                String testStr = "";
+                // txt 파일 생성
+                for(int i = 0 ; i < rssi_device1; i ++){
+                    testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ " "  + Adapter_Rssi.device_1.get(i).getTimeStamp()+ "" ;
+                }
 
-                                testStr +="[____________";
+                testStr +="[____________";
 
-                                for(int i = 0 ; i < rssi_device2; i ++){
-                                    testStr += Adapter_Rssi.device_2.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_2.get(i).getRssi() + " " + Adapter_Rssi.device_2.get(i).getDistance() + " " + Adapter_Rssi.device_2.get(i).getTimeStamp()+ "]" ;
-                                }
+                for(int i = 0 ; i < rssi_device2; i ++){
+                    testStr += Adapter_Rssi.device_2.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_2.get(i).getRssi() + " " + Adapter_Rssi.device_2.get(i).getDistance() + " " + Adapter_Rssi.device_2.get(i).getTimeStamp()+ "]" ;
+                }
 
-                                testStr +="[____________";
+                testStr +="[____________";
 
-                                for(int i = 0 ; i < rssi_device3; i ++){
-                                    testStr += Adapter_Rssi.device_3.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_3.get(i).getRssi() + " " + Adapter_Rssi.device_3.get(i).getDistance()+ " "  + Adapter_Rssi.device_3.get(i).getTimeStamp()+ "]" ;
-                                }
+                for(int i = 0 ; i < rssi_device3; i ++){
+                    testStr += Adapter_Rssi.device_3.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_3.get(i).getRssi() + " " + Adapter_Rssi.device_3.get(i).getDistance()+ " "  + Adapter_Rssi.device_3.get(i).getTimeStamp()+ "]" ;
+                }
 
-                                File savefile = new File(dirPath+"/"+ txt_name.getText().toString()+ ".txt");
-                                try{
-                                    FileOutputStream fos = new FileOutputStream(savefile);
-                                    fos.write(testStr.getBytes());
-                                    fos.close();
-                                    int dataNum = 0;
-                                    if(rssi_device1 != 0)
-                                        dataNum = rssi_device1;
-                                    else if(rssi_device2 != 0)
-                                        dataNum = rssi_device2;
-                                    else if(rssi_device3 != 0)
-                                        dataNum = rssi_device3;
-                                    else
-                                        dataNum=-1;
+                int num = 0; //txt number.
 
-                                    Toast.makeText(MainActivity.this, "Save Success"+dirPath+"/Data Num="+dataNum, Toast.LENGTH_SHORT).show();
+                File savefile = new File(dirPath+"/"+num+ ".txt");
+                while( savefile.exists() )
+                {
+                    num++;
+                    savefile = new File(dirPath+"/"+num+ ".txt");
+                    Log.e("test","test"+num);
+                }
 
-                                } catch(IOException e){}
+                try{
+                    FileOutputStream fos = new FileOutputStream(savefile);
+                    fos.write(testStr.getBytes());
+                    fos.close();
+                    int dataNum = 0;
+                    if(rssi_device1 != 0)
+                        dataNum = rssi_device1;
+                    else if(rssi_device2 != 0)
+                        dataNum = rssi_device2;
+                    else if(rssi_device3 != 0)
+                        dataNum = rssi_device3;
+                    else
+                        dataNum=-1;
 
-                                // 파일이 1개 이상이면 파일 이름 출력
-                                if ( file.listFiles().length > 0 )
-                                    for ( File f : file.listFiles() ) {
-                                        String str = f.getName();
-                                        Log.v(null,"fileName : "+str);
+                    Toast.makeText(MainActivity.this, "Save Success"+dirPath+"/Data Num="+dataNum, Toast.LENGTH_SHORT).show();
 
-                                        // 파일 내용 읽어오기
-                                        String loadPath = dirPath+"/"+str;
-                                        try {
-                                            FileInputStream fis = new FileInputStream(loadPath);
-                                            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(fis));
+                } catch(IOException e){}
 
-                                            String content="", temp="";
-                                            while( (temp = bufferReader.readLine()) != null ) {
-                                                content += temp;
-                                            }
-                                            Log.v(null,""+content);
-                                        } catch (Exception e) {}
-                                    }
+                // 파일이 1개 이상이면 파일 이름 출력
+                if ( file.listFiles().length > 0 )
+                    for ( File f : file.listFiles() ) {
+                        String str = f.getName();
+                        Log.v(null,"fileName : "+str);
+
+                        // 파일 내용 읽어오기
+                        String loadPath = dirPath+"/"+str;
+                        try {
+                            FileInputStream fis = new FileInputStream(loadPath);
+                            BufferedReader bufferReader = new BufferedReader(new InputStreamReader(fis));
+
+                            String content="", temp="";
+                            while( (temp = bufferReader.readLine()) != null ) {
+                                content += temp;
                             }
-                        }).setNegativeButton("취소",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // 'No'
-                                return;
-                            }
-                        });
-                AlertDialog ad = aDialog.create();
-
-                ad.show();
-
+                            Log.v(null,""+content);
+                        } catch (Exception e) {}
+                    }
             }
         });
     }
