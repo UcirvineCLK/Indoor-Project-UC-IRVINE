@@ -13,6 +13,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button save_button;
 
+    private Handler mHandler;
+    private Runnable mRunnable;
 
     double avg_d2;
     int c_d2;
@@ -115,34 +119,11 @@ public class MainActivity extends AppCompatActivity {
         avg_d3 = 0;
         c_d3 = 0;
 
-        save_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-//                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
-//                View layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.popup));
-//                AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
-//
-//                final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
-//
-//                aDialog.setTitle("Rssi receive"); //타이틀바 제목
-//                aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
-//                aDialog.setPositiveButton("확인",
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-////                               String dirPath = "/storage/emulated/0";
-//
-//                            }
-//                        }).setNegativeButton("취소",
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                // 'No'
-//                                return;
-//                            }
-//                        });
-//                AlertDialog ad = aDialog.create();
-//
-//                ad.show();
+
+
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
                 String dirPath = "/sdcard";
 
                 File file = new File(dirPath);
@@ -202,6 +183,18 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(MainActivity.this, "Save Success"+dirPath+"/Data Num="+dataNum, Toast.LENGTH_SHORT).show();
 
+
+
+                    //초기화
+                    Adapter_Rssi.device_1 = new ArrayList<rssiData>();
+                    Adapter_Rssi.device_2 = new ArrayList<rssiData>();
+                    Adapter_Rssi.device_3 = new ArrayList<rssiData>();
+
+                    ActivityCompat.finishAffinity(MainActivity.this);
+                    System.runFinalizersOnExit(true);
+                    System.exit(0);
+
+
                 } catch(IOException e){}
 
                 // 파일이 1개 이상이면 파일 이름 출력
@@ -223,6 +216,44 @@ public class MainActivity extends AppCompatActivity {
                             Log.v(null,""+content);
                         } catch (Exception e) {}
                     }
+            }
+        };
+
+        mHandler = new Handler();
+        mHandler.postDelayed(mRunnable, 35000);
+
+
+
+        save_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+//                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(MainActivity.this.LAYOUT_INFLATER_SERVICE);
+//                View layout = inflater.inflate(R.layout.dialog, (ViewGroup) findViewById(R.id.popup));
+//                AlertDialog.Builder aDialog = new AlertDialog.Builder(MainActivity.this);
+//
+//                final EditText txt_name = (EditText) layout.findViewById(R.id.txt_name);
+//
+//                aDialog.setTitle("Rssi receive"); //타이틀바 제목
+//                aDialog.setView(layout); //dialog.xml 파일을 뷰로 셋팅
+//                aDialog.setPositiveButton("확인",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+////                               String dirPath = "/storage/emulated/0";
+//
+//                            }
+//                        }).setNegativeButton("취소",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                // 'No'
+//                                return;
+//                            }
+//                        });
+//                AlertDialog ad = aDialog.create();
+//
+//                ad.show();
+
+
             }
         });
     }
