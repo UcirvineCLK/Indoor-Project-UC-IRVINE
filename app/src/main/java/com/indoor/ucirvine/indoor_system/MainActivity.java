@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 int rssi_device1 = Adapter_Rssi.device_1.size();        //버튼 클릭시 사이즈 픽스
                 int rssi_device2 = Adapter_Rssi.device_2.size();
                 int rssi_device3 = Adapter_Rssi.device_3.size();
+                int rssi_device4 = Adapter_Rssi.device_4.size();
 
 
                 // 일치하는 폴더가 없으면 생성
@@ -157,6 +158,13 @@ public class MainActivity extends AppCompatActivity {
                     testStr += Adapter_Rssi.device_3.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_3.get(i).getRssi() + " " + Adapter_Rssi.device_3.get(i).getDistance()+ " "  + Adapter_Rssi.device_3.get(i).getTimeStamp()+ "]" ;
                 }
 
+                testStr +="[____________";
+
+                for(int i = 0 ; i < rssi_device4; i ++){
+                    testStr += Adapter_Rssi.device_4.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_4.get(i).getRssi() + " " + Adapter_Rssi.device_4.get(i).getDistance()+ " "  + Adapter_Rssi.device_4.get(i).getTimeStamp()+ "]" ;
+                }
+
+
                 int num = 0; //txt number.
 
                 File savefile = new File(dirPath+"/"+num+ ".txt");
@@ -178,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
                         dataNum = rssi_device2;
                     else if(rssi_device3 != 0)
                         dataNum = rssi_device3;
+                    else if(rssi_device4 != 0)
+                        dataNum = rssi_device4;
                     else
                         dataNum=-1;
 
@@ -189,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     Adapter_Rssi.device_1 = new ArrayList<rssiData>();
                     Adapter_Rssi.device_2 = new ArrayList<rssiData>();
                     Adapter_Rssi.device_3 = new ArrayList<rssiData>();
+                    Adapter_Rssi.device_4 = new ArrayList<rssiData>();
 
                     ActivityCompat.finishAffinity(MainActivity.this);
                     System.runFinalizersOnExit(true);
@@ -308,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
-                double d1 = 0, d2 = 0 , d3 = 0;
+                double d1 = 0, d2 = 0 , d3 = 0, d4 = 0;
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
@@ -317,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6")) {
+                            if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6") || device.getAddress().equals("B8:27:EB:3A:91:F4")) {
 
 
                                 Long tsLong = System.currentTimeMillis() / 1000;
@@ -353,11 +364,17 @@ public class MainActivity extends AppCompatActivity {
                                     adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d2);
                                     adapter.notifyDataSetChanged();
                                 }
-//                                //test
-//                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
-//                                    device2.setText("" + rssi);
-//                                    device2_distance.setText("  "+ d);
-//                                }
+                                //test
+                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
+                                    device2.setText("" + avg_d2/c_d2);
+                                    device2_distance.setText("  "+ d2);
+
+                                    d4 = calculateAccuracy(-56, rssi);
+                                    printScanRecord(scanRecord);
+                                    adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d4);
+                                    adapter.notifyDataSetChanged();
+
+                                }
 
                                 if (device.getAddress().equals("B8:27:EB:25:31:D6")) {
                                     avg_d3 += rssi;

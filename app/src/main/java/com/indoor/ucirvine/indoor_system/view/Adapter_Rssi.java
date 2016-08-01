@@ -25,6 +25,9 @@ public class Adapter_Rssi  extends BaseAdapter {
     public static ArrayList<rssiData> device_2 = new ArrayList<rssiData>();
     public static ArrayList<rssiData> device_3 = new ArrayList<rssiData>();
 
+    public static ArrayList<rssiData> device_4 = new ArrayList<rssiData>();
+
+
     // ListViewAdapter의 생성자
     public Adapter_Rssi() {
 
@@ -98,6 +101,10 @@ public class Adapter_Rssi  extends BaseAdapter {
 
             if (address.equals("B8:27:EB:25:31:D6"))
                 device_3.add(item);
+
+            if (address.equals("B8:27:EB:3A:91:F4"))
+                device_4.add(item);
+
 
             listView.add(item);
 //        }
