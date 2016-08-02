@@ -339,7 +339,13 @@ public class MainActivity extends AppCompatActivity {
 
                                 if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
                                     device1.setText("" + rssi);
-                                    d1 = calculateAccuracy(-56,rssi);
+//                                    d1 = calculateAccuracy(-56,rssi);
+                                    //근의 공식
+                                    double a = -0.00285838, b = 0.08813278, c = 0.40389014;
+                                    d1 = ( b + Math.sqrt( b*b + 4+(rssi-c)*a))
+                                            /2*(rssi - c);
+                                    d2 = ( b - Math.sqrt( b*b + 4+(rssi-c)*a))
+                                            /2*(rssi - c);
 
                                     device1_distance.setText("  " + d1);
                                     printScanRecord(scanRecord);
