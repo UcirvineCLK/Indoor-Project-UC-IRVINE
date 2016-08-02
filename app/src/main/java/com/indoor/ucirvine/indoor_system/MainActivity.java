@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, 1000000000);
+        mHandler.postDelayed(mRunnable, 40000);
 
 
 
@@ -330,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
 
                             if (device.getAddress().equals("B8:27:EB:A6:A1:E9") || device.getAddress().equals("B8:27:EB:26:28:F4") || device.getAddress().equals("B8:27:EB:25:31:D6") || device.getAddress().equals("B8:27:EB:3A:91:F4")) {
 
-
                                 Long tsLong = System.currentTimeMillis() / 1000;
                                 String ts = tsLong.toString();
                                 //byte txpw = scanRecord[29];
@@ -345,6 +344,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     d1 = (y-b)/a;
                                     d1 = Math.pow(10,d1);
+
+
 //                                    d2 = ( -b - Math.sqrt( b*b + 4*(c-y)*a))
 //                                            /(2*(c - y));
 
@@ -353,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                                     device2_distance.setText("  " + d2);
 
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), ""+ts ,"" + rssi, ""+ d1);
+                                    adapter.addItem(device.getName(), "first device", ""+ts ,"" + rssi, ""+ d1);
                                     adapter.notifyDataSetChanged();
                                 }
 
