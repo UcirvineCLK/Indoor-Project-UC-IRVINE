@@ -341,14 +341,14 @@ public class MainActivity extends AppCompatActivity {
                                     device1.setText("" + rssi);
 //                                    d1 = calculateAccuracy(-56,rssi);
                                     //근의 공식
-                                    double a = -0.00285838, b = 0.08813278, c = 0.40389014, y = (-25.0)/rssi;
+                                    double a = -23.26833904, b = -24.55351519 , y = rssi - (-25.0) ;
 
-                                    d1 = ( -b + Math.sqrt( b*b + 4*(c-y)*a))
-                                            /(2*(c-y));
-                                    d2 = ( -b - Math.sqrt( b*b + 4*(c-y)*a))
-                                            /(2*(c - y));
-//                                    d1 = Math.sqrt( b*b + 4.0*(y-c)*a);
-//                                    d2 = b*b + 4.0*(y-c)*a;
+                                    d1 = (y-b)/a;
+                                    d1 = Math.pow(10,d1);
+//                                    d2 = ( -b - Math.sqrt( b*b + 4*(c-y)*a))
+//                                            /(2*(c - y));
+
+
                                     device1_distance.setText("  " + d1);
                                     device2_distance.setText("  " + d2);
 
