@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, 35000);
+        mHandler.postDelayed(mRunnable, 1000000000);
 
 
 
@@ -341,13 +341,17 @@ public class MainActivity extends AppCompatActivity {
                                     device1.setText("" + rssi);
 //                                    d1 = calculateAccuracy(-56,rssi);
                                     //근의 공식
-                                    double a = -0.00285838, b = 0.08813278, c = 0.40389014;
-                                    d1 = ( b + Math.sqrt( b*b + 4+(rssi-c)*a))
-                                            /2*(rssi - c);
-                                    d2 = ( b - Math.sqrt( b*b + 4+(rssi-c)*a))
-                                            /2*(rssi - c);
+                                    double a = -0.00285838, b = 0.08813278, c = 0.40389014, y = (-25.0)/rssi;
 
+                                    d1 = ( -b + Math.sqrt( b*b + 4*(c-y)*a))
+                                            /(2*(c-y));
+                                    d2 = ( -b - Math.sqrt( b*b + 4*(c-y)*a))
+                                            /(2*(c - y));
+//                                    d1 = Math.sqrt( b*b + 4.0*(y-c)*a);
+//                                    d2 = b*b + 4.0*(y-c)*a;
                                     device1_distance.setText("  " + d1);
+                                    device2_distance.setText("  " + d2);
+
                                     printScanRecord(scanRecord);
                                     adapter.addItem(device.getName(), device.getAddress(), ""+ts ,"" + rssi, ""+ d1);
                                     adapter.notifyDataSetChanged();
