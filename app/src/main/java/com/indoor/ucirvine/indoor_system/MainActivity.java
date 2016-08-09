@@ -62,11 +62,17 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private Runnable mRunnable;
 
+    private Handler mHandlerToRestart;
+    private Runnable mRunableToRestart;
+
     double avg_d2;
     int c_d2;
 
     double avg_d3;
     int c_d3;
+
+    int avg[] = new int[500];
+    int size = 0;
 
     private final static int REQUEST_ENABLE_BT = 1;
 
@@ -110,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mBluetoothAdapter.startLeScan(mLeScanCallback);
 //        mBluetoothAdapter.
 
         avg_d2 = 0;
@@ -119,7 +124,19 @@ public class MainActivity extends AppCompatActivity {
         avg_d3 = 0;
         c_d3 = 0;
 
+        mBluetoothAdapter.startLeScan(mLeScanCallback);
 
+
+        mRunableToRestart = new Runnable() {
+            @Override
+            public void run() {
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+                mHandlerToRestart.postDelayed(mRunableToRestart, 3000);
+                Log.e("isGood","working");
+
+            }
+        };
 
         mRunnable = new Runnable() {
             @Override
@@ -132,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
                 int rssi_device2 = Adapter_Rssi.device_2.size();
                 int rssi_device3 = Adapter_Rssi.device_3.size();
                 int rssi_device4 = Adapter_Rssi.device_4.size();
+
+                int rssi_result = Adapter_Rssi.result.size();
+                int rssi_result2 = Adapter_Rssi.result2.size();
 
 
                 // 일치하는 폴더가 없으면 생성
@@ -162,6 +182,18 @@ public class MainActivity extends AppCompatActivity {
 
                 for(int i = 0 ; i < rssi_device4; i ++){
                     testStr += Adapter_Rssi.device_4.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_4.get(i).getRssi() + " " + Adapter_Rssi.device_4.get(i).getDistance()+ " "  + Adapter_Rssi.device_4.get(i).getTimeStamp()+ "]" ;
+                }
+
+                testStr +=" result] ";
+
+                for(int i = 0 ; i < rssi_result; i ++){
+                    testStr += Adapter_Rssi.result.get(i).getDeviceAddress() + " " + Adapter_Rssi.result.get(i).getRssi() + " " + Adapter_Rssi.result.get(i).getDistance()+ " "  + Adapter_Rssi.result.get(i).getTimeStamp()+ "]" ;
+                }
+
+                testStr +=" result2] ";
+
+                for(int i = 0 ; i < rssi_result2; i ++){
+                    testStr += Adapter_Rssi.result2.get(i).getDeviceAddress() + " " + Adapter_Rssi.result2.get(i).getRssi() + " " + Adapter_Rssi.result2.get(i).getDistance()+ " "  + Adapter_Rssi.result2.get(i).getTimeStamp()+ "]" ;
                 }
 
 
@@ -201,6 +233,9 @@ public class MainActivity extends AppCompatActivity {
                     Adapter_Rssi.device_3 = new ArrayList<rssiData>();
                     Adapter_Rssi.device_4 = new ArrayList<rssiData>();
 
+                    Adapter_Rssi.result = new ArrayList<rssiData>();
+
+
                     ActivityCompat.finishAffinity(MainActivity.this);
                     System.runFinalizersOnExit(true);
                     System.exit(0);
@@ -233,6 +268,9 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Handler();
         mHandler.postDelayed(mRunnable, 40000);
 
+        mHandlerToRestart = new Handler();
+
+        mHandlerToRestart.postDelayed(mRunableToRestart, 3000);
 
 
         save_button.setOnClickListener(new View.OnClickListener() {
@@ -354,7 +392,30 @@ public class MainActivity extends AppCompatActivity {
                                     device2_distance.setText("  " + d2);
 
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), "first device", ""+ts ,"" + rssi, ""+ d1);
+                                    adapter.addItem(device.getName(), "B8:27:EB:A6:A1:E9", ""+ts ,"" + rssi, ""+ d1);
+
+                                    avg[size++] = rssi;
+
+                                    double result = 0;
+                                    double result2 = 0;
+
+                                    if( size > 3){
+                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    }
+
+                                    if( size > 8){
+                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
+                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    }
+
+
+                                    //TODO calcultor avg
+                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
+
+                                    //TODO calcultor avg2
+                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
+
+
                                     adapter.notifyDataSetChanged();
                                 }
 
@@ -373,6 +434,27 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     printScanRecord(scanRecord);
                                     adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d2);
+                                    avg[size++] = rssi;
+
+                                    double result = 0;
+                                    double result2 = 0;
+
+                                    if( size > 3){
+                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    }
+
+                                    if( size > 8){
+                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
+                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    }
+
+
+                                    //TODO calcultor avg
+                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
+
+                                    //TODO calcultor avg2
+                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
+
                                     adapter.notifyDataSetChanged();
                                 }
                                 //test
@@ -383,6 +465,28 @@ public class MainActivity extends AppCompatActivity {
                                     d4 = calculateAccuracy(-56, rssi);
                                     printScanRecord(scanRecord);
                                     adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d4);
+
+                                    avg[size++] = rssi;
+
+                                    double result = 0;
+                                    double result2 = 0;
+
+                                    if( size > 3){
+                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    }
+
+                                    if( size > 8){
+                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
+                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    }
+
+
+                                    //TODO calcultor avg
+                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
+
+                                    //TODO calcultor avg2
+                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
+
                                     adapter.notifyDataSetChanged();
 
                                 }
@@ -401,6 +505,29 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     printScanRecord(scanRecord);
                                     adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d3);
+
+                                    avg[size++] = rssi;
+
+                                    double result = 0;
+                                    double result2 = 0;
+
+                                    if( size > 3){
+                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    }
+
+                                    if( size > 8){
+                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
+                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    }
+
+
+                                    //TODO calcultor avg
+                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
+
+                                    //TODO calcultor avg2
+                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
+
+
                                     adapter.notifyDataSetChanged();
                                 }
 
