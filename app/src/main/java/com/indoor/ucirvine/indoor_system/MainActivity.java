@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
 
@@ -71,8 +72,26 @@ public class MainActivity extends AppCompatActivity {
     double avg_d3;
     int c_d3;
 
-    int avg[] = new int[500];
-    int size = 0;
+    int avg1[] = new int[8];
+    int avg2[] = new int[8];
+    int avg3[] = new int[8];
+    int avg4[] = new int[8];
+
+    int size1 = 0;
+    int size2 = 0;
+    int size3 = 0;
+    int size4 = 0;
+
+    double result1 = 0;
+    double result2 = 0;
+    double result3 = 0;
+    double result4 = 0;
+
+    boolean full1 = false;
+    boolean full2 = false;
+    boolean full3 = false;
+    boolean full4 = false;
+
 
     private final static int REQUEST_ENABLE_BT = 1;
 
@@ -162,8 +181,9 @@ public class MainActivity extends AppCompatActivity {
 
                 String testStr = "";
                 // txt 파일 생성
+
                 for(int i = 0 ; i < rssi_device1; i ++){
-                    testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ " "  + Adapter_Rssi.device_1.get(i).getTimeStamp()+ "" ;
+                    testStr += Adapter_Rssi.device_1.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_1.get(i).getRssi() + " " + Adapter_Rssi.device_1.get(i).getDistance()+ "]" ;
                 }
 
                 testStr +="[____________";
@@ -184,13 +204,13 @@ public class MainActivity extends AppCompatActivity {
                     testStr += Adapter_Rssi.device_4.get(i).getDeviceAddress() + " " + Adapter_Rssi.device_4.get(i).getRssi() + " " + Adapter_Rssi.device_4.get(i).getDistance()+ " "  + Adapter_Rssi.device_4.get(i).getTimeStamp()+ "]" ;
                 }
 
-                testStr +=" result] ";
+//                testStr +=" result] ";
 
                 for(int i = 0 ; i < rssi_result; i ++){
                     testStr += Adapter_Rssi.result.get(i).getDeviceAddress() + " " + Adapter_Rssi.result.get(i).getRssi() + " " + Adapter_Rssi.result.get(i).getDistance()+ " "  + Adapter_Rssi.result.get(i).getTimeStamp()+ "]" ;
                 }
 
-                testStr +=" result2] ";
+//                testStr +=" result2] ";
 
                 for(int i = 0 ; i < rssi_result2; i ++){
                     testStr += Adapter_Rssi.result2.get(i).getDeviceAddress() + " " + Adapter_Rssi.result2.get(i).getRssi() + " " + Adapter_Rssi.result2.get(i).getDistance()+ " "  + Adapter_Rssi.result2.get(i).getTimeStamp()+ "]" ;
@@ -266,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, 40000);
+        mHandler.postDelayed(mRunnable, 20000);
 
         mHandlerToRestart = new Handler();
 
@@ -358,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
                 double d1 = 0, d2 = 0 , d3 = 0, d4 = 0;
+                double x=0, y=0;
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                     runOnUiThread(new Runnable() {
@@ -374,185 +395,207 @@ public class MainActivity extends AppCompatActivity {
                                 scanRecord.toString();
 
 
+                                //device 1
                                 if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
-                                    device1.setText("" + rssi);
-//                                    d1 = calculateAccuracy(-56,rssi);
-                                    //근의 공식
-                                    double a = -23.26833904, b = -24.55351519 , y = rssi - (-25.0) ;
-
-                                    d1 = (y-b)/a;
-                                    d1 = Math.pow(10,d1);
-
-
-//                                    d2 = ( -b - Math.sqrt( b*b + 4*(c-y)*a))
-//                                            /(2*(c - y));
-
-
-                                    device1_distance.setText("  " + d1);
-                                    device2_distance.setText("  " + d2);
 
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), "B8:27:EB:A6:A1:E9", ""+ts ,"" + rssi, ""+ d1);
 
-                                    avg[size++] = rssi;
+                                    double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
 
-                                    double result = 0;
-                                    double result2 = 0;
+                                    printScanRecord(scanRecord);
 
-                                    if( size > 3){
-                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    avg1[size1++] = rssi;
+
+                                    if(size1 > 7){
+                                        full1 = true;
+                                        size1 = 0;
                                     }
 
-                                    if( size > 8){
-                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
-                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    if( full1) {
+                                        result1 = (avg1[0] + avg1[1] + avg1[2] + avg1[3]
+                                                + avg1[4] + avg1[5] + avg1[6] + avg1[7]) / 8.0;
+                                        y = result1 - (-25.1366666667);
+
+
+                                        d1 = (y - b) / a;
+                                        d1 = Math.pow(10, d1);
+
+                                        device1.setText("" + result1);
+                                        device1_distance.setText(" dis " + d1);
+
+//                                        adapter.addItem(device.getName(), device.getAddress(), "" + ts, "" + rssi, "" + d1);
+//
+//                                        //TODO calcultor avg
+//                                        adapter.addItem(device.getName(), "result", "" + ts, "" + result1, "" + d1);
+
                                     }
-
-
-                                    //TODO calcultor avg
-                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
-
-                                    //TODO calcultor avg2
-                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
-
-
                                     adapter.notifyDataSetChanged();
                                 }
 
+                                //device 2
                                 if (device.getAddress().equals("B8:27:EB:26:28:F4")){
-                                    avg_d2 += rssi;
-                                    c_d2 ++;
-                                    //d2 = calculateAccuracy(-56,rssi);
 
-
-                                    if(c_d2 > 10){
-                                        device2.setText("" + avg_d2/c_d2);
-                                        d2 = calculateAccuracy(-56, avg_d2/c_d2);
-                                        device2_distance.setText("  "+ d2);
-                                        avg_d2 = 0;
-                                        c_d2 = 0;
-                                    }
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d2);
-                                    avg[size++] = rssi;
 
-                                    double result = 0;
-                                    double result2 = 0;
+                                    double a = -27.37390491, b = -26.44442921 , y = rssi - (-25.6375) ;
 
-                                    if( size > 3){
-                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    printScanRecord(scanRecord);
+
+                                    avg2[size2++] = rssi;
+
+                                    if(size2 > 7){
+                                        full2 = true;
+                                        size2 = 0;
                                     }
 
-                                    if( size > 8){
-                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
-                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    if( full2) {
+                                        result2 = (avg2[0] + avg2[1] + avg2[2] + avg2[3]
+                                                + avg2[4] + avg2[5] + avg2[6] + avg2[7]) / 8.0;
+                                        y = result2 - (-25.6375);
+
+
+                                        d2 = (y - b) / a;
+                                        d2 = Math.pow(10, d2);
+
+
+//                                        device2.setText("" + result2);
+//                                        device2_distance.setText(" dis " + d2);
+
+//                                    adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d2);
+
+//                                    //TODO calcultor avg
+//                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d2);
+//
+//                                    //TODO calcultor avg2
+//                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d2);
+
                                     }
-
-
-                                    //TODO calcultor avg
-                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
-
-                                    //TODO calcultor avg2
-                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
-
                                     adapter.notifyDataSetChanged();
                                 }
-                                //test
-                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
-                                    device2.setText("" + avg_d2/c_d2);
-                                    device2_distance.setText("  "+ d2);
 
-                                    d4 = calculateAccuracy(-56, rssi);
-                                    printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(), ""+ ts , "" + rssi, ""+ d4);
-
-                                    avg[size++] = rssi;
-
-                                    double result = 0;
-                                    double result2 = 0;
-
-                                    if( size > 3){
-                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
-                                    }
-
-                                    if( size > 8){
-                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
-                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
-                                    }
-
-
-                                    //TODO calcultor avg
-                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
-
-                                    //TODO calcultor avg2
-                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
-
-                                    adapter.notifyDataSetChanged();
-
-                                }
-
+                                //device 3
                                 if (device.getAddress().equals("B8:27:EB:25:31:D6")) {
-                                    avg_d3 += rssi;
-                                    c_d3 ++;
-                                    //d3 = calculateAccuracy(-56,rssi);
 
-                                    if(c_d3 > 30){
-                                        device3.setText("" + avg_d3/c_d3);
-                                        d3 = calculateAccuracy(-56, avg_d3/c_d3);
-                                        device3_distance.setText("  "+ d3);
-                                        c_d3 = 0;
-                                        avg_d3=0;
-                                    }
+                                    double a = -23.13184903, b = -25.48251426 , y = rssi - (-25.8245833333) ;
+
                                     printScanRecord(scanRecord);
-                                    adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d3);
 
-                                    avg[size++] = rssi;
+                                    avg3[size3++] = rssi;
 
-                                    double result = 0;
-                                    double result2 = 0;
-
-                                    if( size > 3){
-                                        result = (avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/4;
+                                    if(size3 > 7){
+                                        full3 = true;
+                                        size3 = 0;
                                     }
 
-                                    if( size > 8){
-                                        result2 = (avg[size-8]+avg[size-7]+avg[size-6]+avg[size-5]
-                                                +avg[size-4]+avg[size-3]+avg[size-2]+avg[size-1])/8;
+                                    device3.setText("" + result3);
+                                    device3_distance.setText(" dis "+ d3);
+
+                                    if( full3) {
+                                        result3 = (avg3[0] + avg3[1] + avg3[2] + avg3[3]
+                                                + avg3[4] + avg3[5] + avg3[6] + avg3[7]) / 8.0;
+
+                                        y = result3 - (-25.8245833333);
+
+
+                                        d3 = (y - b) / a;
+                                        d3 = Math.pow(10, d3);
+
+
+//                                    adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d3);
+//
+//                                    //TODO calcultor avg
+//                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d3);
+//
+//                                    //TODO calcultor avg2
+//                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d3);
+
                                     }
-
-
-                                    //TODO calcultor avg
-                                    adapter.addItem(device.getName(), "result", ""+ts ,"" + result, ""+ d1);
-
-                                    //TODO calcultor avg2
-                                    adapter.addItem(device.getName(), "result2", ""+ts ,"" + result2, ""+ d1);
-
-
                                     adapter.notifyDataSetChanged();
                                 }
 
+                                //device 4
+                                if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
 
-                                double x1 = 0, y1 = 0;     // device2 addr = d2
-                                double x2 = 0, y2 = 2;    // device3 addr = d3
-                                double x3 = -1, y3 = -3;   // device1 addr = d1
-                                double x=0, y =0; // terminal addr init
+                                    printScanRecord(scanRecord);
 
-                                y = (Math.pow(d2,2)+4-Math.pow(d3,2))/4;
+                                    double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
 
-                                double x_t =Math.pow(d2,2)-y;
-                                if(x_t <0)
-                                    x_t=-1*x_t;
+                                    printScanRecord(scanRecord);
 
-                                x=Math.sqrt(x_t);
-                                Log.e("d1","d1 = "+d1);
-                                Log.e("d2","d2 = "+d2);
-                                Log.e("d3","d3 = "+d3);
-                                Log.e("x","x = "+x);
-                                Log.e("y","y = "+y);
+                                    avg4[size4++] = rssi;
 
-                                Log.e("rssi", "rssi = " + " name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw =-56" + " " + scanRecord);
-                                Log.e("scanRecord", "scanRecord = " + scanRecord.toString());
+                                    if(size4 > 7){
+                                        full4 = true;
+                                        size4 = 0;
+                                    }
 
+                                    if( full4) {
+                                        result4 = (avg4[0] + avg4[1] + avg4[2] + avg4[3]
+                                                + avg4[4] + avg4[5] + avg4[6] + avg4[7]) / 8.0;
+                                        y = result4 - (-25.1366666667);
+
+
+                                        d4 = (y - b) / a;
+                                        d4 = Math.pow(10, d4);
+
+
+
+//                                    adapter.addItem(device.getName(), device.getAddress(),"" + ts, "" + rssi, ""+ d4);
+//
+//                                    adapter.addItem(device.getName(), "result4", ""+ts ,"" + result4, ""+ d4);
+//
+                                    }
+                                    adapter.notifyDataSetChanged();
+
+                                }
+
+                                double result_x = (d3*d3-d1*d1-9)/(-6.0);
+                                double result_y = (d2*d2-d1*d1-9)/(-6.0);
+
+
+                                device1.setText("x = " + result_x);
+                                device2.setText("y = " + result_y);
+
+                                adapter.addItem(device.getName(), "result", "" + ts, "" + result1, d1 + " " + d2 + " " + d3 + " "
+                                + result_x + " " + result_y);
+
+
+
+                                //Double w1,w2;
+
+                                /*w1 = Math.exp(-d2);
+                                w2 = Math.exp(-d3);*/
+
+
+
+
+                                /*if(d2 > 0.0 && d3 > 0.0 ) {
+                                    adapter.addItem("yyg", "result", "" + ts, "" + rssi, d2 + " " + d3 + " " + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+                                    adapter.notifyDataSetChanged();
+                                }*/
+                                //device1.setText("" + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+
+//                                double x1 = 0, y1 = 0;     // device2 addr = d2
+//                                double x2 = 0, y2 = 2;    // device3 addr = d3
+//                                double x3 = -1, y3 = -3;   // device1 addr = d1
+//                                double x=0, y =0; // terminal addr init
+//
+//                                y = (Math.pow(d2,2)+4-Math.pow(d3,2))/4;
+//
+//                                double x_t =Math.pow(d2,2)-y;
+//                                if(x_t <0)
+//                                    x_t=-1*x_t;
+//
+//                                x=Math.sqrt(x_t);
+//                                Log.e("d1","d1 = "+d1);
+//                                Log.e("d2","d2 = "+d2);
+//                                Log.e("d3","d3 = "+d3);
+//                                Log.e("x","x = "+x);
+//                                Log.e("y","y = "+y);
+//
+//                                Log.e("rssi", "rssi = " + " name : " + device.getName() + " address" + device.getAddress() + " " + rssi + "time " + ts + "txpw =-56" + " " + scanRecord);
+//                                Log.e("scanRecord", "scanRecord = " + scanRecord.toString());
+//
 
 
 //                                for(int i = 0 ; i < 56 ; i++){
