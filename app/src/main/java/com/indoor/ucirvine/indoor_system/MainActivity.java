@@ -12,6 +12,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -42,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Jama.Matrix;
+
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends AppCompatActivity {
@@ -65,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler mHandlerToRestart;
     private Runnable mRunableToRestart;
+
+    private Handler mHandlerToMusic;
+    private Runnable mRunableToMusic;
+
+    Uri myUri = Uri.parse("file:///sdcard/Download/Hi.mp3"); // initialize Uri here
 
     double avg_d2;
     int c_d2;
@@ -115,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
         listview.setAdapter(adapter);
 
 
+
+
+
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -137,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        mBluetoothAdapter.
 
+
         avg_d2 = 0;
         c_d2 = 0;
 
@@ -145,6 +159,26 @@ public class MainActivity extends AppCompatActivity {
 
         mBluetoothAdapter.startLeScan(mLeScanCallback);
 
+
+        mRunableToMusic = new Runnable() {
+            @Override
+            public void run() {
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mediaPlayer.setDataSource(getApplicationContext(), myUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                mediaPlayer.start();
+
+            }
+        };
 
         mRunableToRestart = new Runnable() {
             @Override
@@ -286,11 +320,13 @@ public class MainActivity extends AppCompatActivity {
         };
 
         mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, 20000);
+
 
         mHandlerToRestart = new Handler();
-
+        mHandlerToMusic = new Handler();
+        mHandler.postDelayed(mRunnable, 20000000);
         mHandlerToRestart.postDelayed(mRunableToRestart, 3000);
+        mHandlerToMusic.postDelayed(mRunableToMusic,3000);
 
 
         save_button.setOnClickListener(new View.OnClickListener() {
@@ -400,7 +436,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     printScanRecord(scanRecord);
 
-                                    double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
+                                    //double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
+                                    double a = -26.01613193, b = -25.60966355 , y = rssi - (-25.1716666667) ;
 
                                     printScanRecord(scanRecord);
 
@@ -414,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                                     if( full1) {
                                         result1 = (avg1[0] + avg1[1] + avg1[2] + avg1[3]
                                                 + avg1[4] + avg1[5] + avg1[6] + avg1[7]) / 8.0;
-                                        y = result1 - (-25.1366666667);
+                                        y = result1 - (-25.1716666667);
 
 
                                         d1 = (y - b) / a;
@@ -476,7 +513,8 @@ public class MainActivity extends AppCompatActivity {
                                 //device 3
                                 if (device.getAddress().equals("B8:27:EB:25:31:D6")) {
 
-                                    double a = -23.13184903, b = -25.48251426 , y = rssi - (-25.8245833333) ;
+                                    //double a = -23.13184903, b = -25.48251426 , y = rssi - (-25.8245833333) ;
+                                    double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
 
                                     printScanRecord(scanRecord);
 
@@ -487,8 +525,8 @@ public class MainActivity extends AppCompatActivity {
                                         size3 = 0;
                                     }
 
-                                    device3.setText("" + result3);
-                                    device3_distance.setText(" dis "+ d3);
+//                                    device3.setText("" + result3);
+//                                    device3_distance.setText(" dis "+ d3);
 
                                     if( full3) {
                                         result3 = (avg3[0] + avg3[1] + avg3[2] + avg3[3]
@@ -549,30 +587,48 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
 
-                                double result_x = (d3*d3-d1*d1-9)/(-6.0);
-                                double result_y = (d2*d2-d1*d1-9)/(-6.0);
+//                                double [][] arrayA = {{-3.0,0.0},{-3.0,3.0}};
+//                                Matrix matA = new Matrix(arrayA);
+//                                double [][] arrayB = {{ 0.5*(d3*d3-d1*d1+9)},{0.5*(d3*d3-d2*d2+18)}};
+//                                Matrix matB = new Matrix(arrayB);
+//
+//                                Matrix matX = (((matA.transpose().times(matA)).inverse()).times(matA.transpose())).times(matB);
+//
+//
+//                                Log.i("dd","matX= " + (matX.get(0,0) + 3) + " " + matX.get(1,0));
+
+                              /*  double w1,w2,w3;
+                                w1 = Math.exp(-d1);
+                                w2 = Math.exp(-d2);
+                                w3 = Math.exp(-d3);*/
+                                /*double result_x = (d3*d3-d1*d1-9)/(-6.0);
+                                double result_y = (d2*d2-d1*d1-9)/(-6.0);*/
+
+//                                double result_x = matX.get(0,0) + 3;
+//                                double result_y = matX.get(1,0);
+//
+//
+//                                device1.setText("x = " + result_x);
+//                                device2.setText("y = " + result_y);
+//
+//                                adapter.addItem(device.getName(), "result", "" + ts, "" + result1, d1 + " " + d2 + " " + d3 + " "
+//                                        + matX.get(0,0)+ " " + matX.get(1,0));
 
 
-                                device1.setText("x = " + result_x);
-                                device2.setText("y = " + result_y);
 
-                                adapter.addItem(device.getName(), "result", "" + ts, "" + result1, d1 + " " + d2 + " " + d3 + " "
-                                + result_x + " " + result_y);
+                                Double w1,w2;
 
+                                w1 = Math.exp(-d2);
+                                w2 = Math.exp(-d3);
 
+                                if(d2 > 0.0 && d3 > 0.0 ) {
 
-                                //Double w1,w2;
-
-                                /*w1 = Math.exp(-d2);
-                                w2 = Math.exp(-d3);*/
-
-
-
-
-                                /*if(d2 > 0.0 && d3 > 0.0 ) {
                                     adapter.addItem("yyg", "result", "" + ts, "" + rssi, d2 + " " + d3 + " " + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+
+                                    device3_distance.setText(""+ ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+
                                     adapter.notifyDataSetChanged();
-                                }*/
+                                }
                                 //device1.setText("" + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
 
 //                                double x1 = 0, y1 = 0;     // device2 addr = d2
