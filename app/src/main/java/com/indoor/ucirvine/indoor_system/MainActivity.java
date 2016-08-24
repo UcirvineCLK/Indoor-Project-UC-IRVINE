@@ -103,6 +103,15 @@ public class MainActivity extends AppCompatActivity {
     boolean full4 = false;
 
 
+    //TODO predict value
+    double predict_x = 0;
+    double predict_p = 0.1;
+    double consitant_r = 0.1;
+
+    //Z
+    double distance;
+
+
     private final static int REQUEST_ENABLE_BT = 1;
 
     @Override
@@ -433,13 +442,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 //device 1
                                 if (device.getAddress().equals("B8:27:EB:A6:A1:E9")) {
-
-                                    printScanRecord(scanRecord);
-
                                     //double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
                                     double a = -26.01613193, b = -25.60966355 , y = rssi - (-25.1716666667) ;
-
-                                    printScanRecord(scanRecord);
 
                                     avg1[size1++] = rssi;
 
@@ -472,11 +476,7 @@ public class MainActivity extends AppCompatActivity {
                                 //device 2
                                 if (device.getAddress().equals("B8:27:EB:26:28:F4")){
 
-                                    printScanRecord(scanRecord);
-
                                     double a = -27.37390491, b = -26.44442921 , y = rssi - (-25.6375) ;
-
-                                    printScanRecord(scanRecord);
 
                                     avg2[size2++] = rssi;
 
@@ -516,8 +516,6 @@ public class MainActivity extends AppCompatActivity {
                                     //double a = -23.13184903, b = -25.48251426 , y = rssi - (-25.8245833333) ;
                                     double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
 
-                                    printScanRecord(scanRecord);
-
                                     avg3[size3++] = rssi;
 
                                     if(size3 > 7){
@@ -554,11 +552,9 @@ public class MainActivity extends AppCompatActivity {
                                 //device 4
                                 if (device.getAddress().equals("B8:27:EB:3A:91:F4")) {
 
-                                    printScanRecord(scanRecord);
 
                                     double a = -22.94102589, b = -24.71862505 , y = rssi - (-25.1366666667) ;
 
-                                    printScanRecord(scanRecord);
 
                                     avg4[size4++] = rssi;
 
@@ -616,19 +612,32 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                                Double w1,w2;
+                                //TODO calculate the distance
+
+                                //weight
+                                double w1,w2;
 
                                 w1 = Math.exp(-d2);
                                 w2 = Math.exp(-d3);
 
                                 if(d2 > 0.0 && d3 > 0.0 ) {
+                                    distance = ((3.0 - d2)*w1 + d3*w2) / (w1+w2);
 
-                                    adapter.addItem("yyg", "result", "" + ts, "" + rssi, d2 + " " + d3 + " " + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+                                    double update_g = predict_p / (predict_p + consitant_r) ;
+                                    predict_x = predict_x + update_g*(distance-predict_x);
+                                    predict_p = (1 - update_g) * predict_p;
 
-                                    device3_distance.setText(""+ ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
+                                    adapter.addItem("yyg", "result", "" + ts, "" + rssi, d2 + " " + d3 + " " + distance + " " + predict_x);
+                                    device2_distance.setText(" "+ distance);
+                                    device3_distance.setText(" "+ predict_x);
 
                                     adapter.notifyDataSetChanged();
                                 }
+
+
+
+
+
                                 //device1.setText("" + ((3.0 - d2)*w1 + d3*w2) / (w1+w2));
 
 //                                double x1 = 0, y1 = 0;     // device2 addr = d2
@@ -663,105 +672,5 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             };
-    public String openFileToString(byte[] _bytes)
-    {
-        String file_string = "";
-
-        for(int i = 0; i < _bytes.length; i++)
-        {
-            file_string += (char)_bytes[i];
-        }
-
-        return file_string;
-    }
-
-    public void printScanRecord (byte[] scanRecord) {
-
-        // Simply print all raw bytes
-        try {
-            String decodedRecord = new String(scanRecord,"UTF-8");
-            Log.d("DEBUG","decoded String : " + ByteArrayToString(scanRecord));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        // Parse data bytes into individual records
-        List<AdRecord> records = AdRecord.parseScanRecord(scanRecord);
-
-
-        // Print individual records
-        if (records.size() == 0) {
-            Log.i("DEBUG", "Scan Record Empty");
-        } else {
-            Log.i("DEBUG", "Scan Record: " + TextUtils.join(",", records));
-        }
-
-    }
-
-    public static String ByteArrayToString(byte[] ba)
-    {
-        StringBuilder hex = new StringBuilder(ba.length * 2);
-        for (byte b : ba)
-            hex.append(b + " ");
-
-        return hex.toString();
-    }
-
-
-
-    public static class AdRecord {
-
-        public AdRecord(int length, int type, byte[] data) {
-            String decodedRecord = "";
-            try {
-                decodedRecord = new String(data,"UTF-8");
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            Log.d("DEBUG", "Length: " + length + " Type : " + type + " Data : " + ByteArrayToString(data));
-        }
-
-        // ...
-
-        public static List<AdRecord> parseScanRecord(byte[] scanRecord) {
-            List<AdRecord> records = new ArrayList<AdRecord>();
-
-            int index = 0;
-            while (index < scanRecord.length) {
-                int length = scanRecord[index++];
-                //Done once we run out of records
-                if (length == 0) break;
-
-                int type = scanRecord[index];
-                //Done if our record isn't a valid type
-                if (type == 0) break;
-
-                byte[] data = Arrays.copyOfRange(scanRecord, index+1, index+length);
-
-                records.add(new AdRecord(length, type, data));
-                //Advance
-                index += length;
-            }
-
-            return records;
-        }
-    }
-
-    protected static double calculateAccuracy(int txPower, double rssi) {
-        if (rssi == 0) {
-            return -1.0; // if we cannot determine accuracy, return -1.
-        }
-
-        double ratio = rssi*1.0/txPower;
-        if (ratio < 1.0) {
-            return Math.pow(ratio,10);
-        }
-        else {
-            double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
-            return accuracy;
-        }
-    }
 }
 
